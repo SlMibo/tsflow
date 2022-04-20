@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tensor Flow en Canvas</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.dom.js"></script>
+</head>
+<body>
+    <script>
+        let x = [];
+        let y = [];
+
+        let w, b;
+        const learningRate = 0.5;
+
+        const optimizer = tf.train.sgd(learningRate);
+
+        function setup(){
+            createCanvas(400,400);
+            background(0);
+            // w = tf.variable(tf.scalar(random(1)));
+            // b = tf.variable(tf.scalar(random(1)));
+            w = tf.variable(tf.tensor(random(1)));
+            b = tf.variable(tf.tensor(random(1)));
+        }
+
+        function predecir(x){
+            const xs = tf.tensor1d(x);
+            const ys = xs.mul(w).add(b);
+
+            return ys;
+        }
+
+        function mousePressed(){
+            // let xPress = map(mouseX, 0, width, 0, 1);
+            // let yPress = map(mouseY, 0, height, 1, 0);
+
+            let xEc = [-1, 0, 1, 2, 3, 4];
+            let yEc = [-1, 2, 5, 8, 11, 14];
+
+            x.push(xEc);
+            y.push(yEc);
+        }
+
+        function draw(){
+            background(0);
+            stroke(255);
+            strokeWeight(8);
+
+            for(i=0; i<x.length; i++){ 
+                let px = map(x[i], 0, 1, 0, width);
+                let py = map(x[i], 0, 1, height, 0);
+                point(px, py);
+            }
+            tf.tidy(() => {
+                if(x.length>0){
+                    const ys = tf.tensor1d(y);
+                    optimizer.minimize(() => predecir(x).sub(ys).square().mean())
+                }
+            })
+
+            let y_pred = tf.tidy(() => predecir([0, 1]));
+            let val_y_pred = y_pred.dataSync(); 
+            y_pred.dispose();
+
+            let x1=map(0, 0, 1, 0, width);
+            let x2=map(1, 0, 1, 0, width);
+
+            let y1=map(val_y_pred[0], 0, 1, height, 0);
+            let y2=map(val_y_pred[1], 0, 1, height, 0);
+
+            line(x1, y1, x2, y2);
+        }
+    </script>
+</body>
+</html>
