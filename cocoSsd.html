@@ -16,10 +16,12 @@
 <body>
     <div>
         <!-- <img id="img" src="./mariposa.jpg"><br> -->
-        <input type="url" id="url" oninput="detImg()">
+        <input type="file" id="file" accept="image/png,image/jpeg, image/jpg" oninput="mostrar()">
         <div id="divImg">
-            <canvas width="100" height="100" id="drawarea"></canvas>
+            <img id="img" width="50%" class="mx-auto d-block">
+            <!-- <canvas width="100" height="100" id="drawarea"></canvas> -->
         </div>
+        <div id="prediccion" class="text-center"></div>
         <button type="submit" onclick="predict()">Predict</button>
         
             
@@ -31,36 +33,56 @@
         // Notice there is no 'import' statement. 'cocoSsd' and 'tf' is
         // available on the index-page because of the script tag above.
       
-        const input = document.getElementById('url');
-        const divImg = document.getElementById('divImg');
-        let file;
+        //const input = document.getElementById('url');
+        //const divImg = document.getElementById('divImg');
+        const img = document.getElementById('img');
+        const prediccion = document.getElementById('prediccion');
+        //const canvase = new Canvas('drawarea');
+        //const canvas = new fabric.Canvas('drawarea');   
         
-        function detImg(){
-            let url = input.value;
+        // function detImg(){
+        //     let url = input.value;
             
-            // Load the model.
+        //     // Load the model.
             
-            let imagen = `<img src=${url} id='img' class='mx-auto d-block'>`
-            divImg.innerHTML = imagen;
-            const canvase = new Canvas('drawarea');
-            const canvas = new fabric.Canvas('drawarea');     
-            const imgInstance = new fabric.Image(imagen, {
-                left: 100,
-                top: 100,
-                angle: 0,
-                opacity: 0.75,
-                width:300,
-                height:300
-            });
-            canvas.add(imgInstance);   
-            // reader.readAsDataURL(input.value);
-            // reader.onloadend = function () {
-            //     url = reader.result;
-            //     console.log(reader.result)
-            //     return url;
-            // }
+        //     let imagen = `<img src=${url} id='img' name='img' class='mx-auto d-block'>`
+        //     divImg.innerHTML = imagen;
+             
+        //     // fabric.util.loadImage(url, (imgObj) => {
+        //     //     const img = new fabric.Image(imgObj)
+        //     //     img.filters.push(new fabric.Image.filters.Grayscale())
+        //     //     img.applyFilters()
+        //     //     canvas.add(img)
+        //     // }, null, 'anonymous') 
+        //     // const imgInstance = new fabric.Image(imagen, {
+        //     //     left: 100,
+        //     //     top: 100,
+        //     //     angle: 0,
+        //     //     opacity: 0.75,
+        //     //     width:300,
+        //     //     height:300
+        //     // });
+        //     // canvas.add(imgInstance);   
+        //     // reader.readAsDataURL(input.value);
+        //     // reader.onloadend = function () {
+        //     //     url = reader.result;
+        //     //     console.log(reader.result)
+        //     //     return url;
+        //     // }
+            
+        // }
+        
+        function mostrar(){
+            let archivo = document.getElementById("file").files[0];
+            let reader = new FileReader();
+            if (file) {
+                reader.readAsDataURL(archivo);
+                reader.onloadend = function () {
+                    // renderiza la imagen seleccionada
+                    img.src = reader.result;
+                }
+            }
         }
-        
 
 
         function predict(){
@@ -69,14 +91,40 @@
             // fabric.Image.fromURL('url', function(myImg) {
             //     canvas.add(myImg); 
             // });
-
+            // const img = document.getElementById('img');
+            // cocoSsd.load().then(model => {
+            //     let canvas = document.createElement("CANVAS");
+            //     let ctx = canvas.getContext("2d");
+            //     canvas.width = img.width;
+            //     canvas.height = img.height;
+            //     ctx.drawImage(img, 0, 0);
+            //     model.detect(img).then(predictions => {
+            //         ctx.strokeRect(predictions[0].bbox[0], predictions[0].bbox[1], predictions[0].bbox[2], predictions[0].bbox[3]);
+            //     })
+            //     let dataURL = canvas.toDataURL();
+            //     img.src = dataURL;
+            // });
+                
             cocoSsd.load().then(model => {
-            // detect objects in the image.
+
                 model.detect(img).then(predictions => {
-                    
-                    console.log('Predictions: ', predictions);
+                    // realiza un mapeo del array "predictions"
+                    //por cada elemento encontrado crea un elemento html para mostrar cada predicción
+                    predictions.map((item) => {
+                        const result = document.createElement("h3")
+                        result.textContent = item.class
+                        prediccion.appendChild(result);
+                    });
                 });
             });
+
+            // cocoSsd.load().then(model => {
+            // // detect objects in the image.
+            //     // model.detect(img).then(predictions => {
+                    
+            //     //     console.log('Predictions: ', predictions);
+            //     // });
+            // });
         }        
         
     </script>
