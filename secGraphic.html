@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+</head>
+<body>
+    <div>
+        <h3>Función = x + 3</h3>
+
+        <table border="0">
+            <tbody>
+                <tr>
+                    <td>Repeticiones</td>
+                    <td><input type="number" id="repeticiones" value="100"/></td>
+                </tr>
+                <tr>
+                    <td>Valor de x</td>
+                    <td><input type="number" id="newX" value="10"/></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td> <input type="button" value="Calcular" name="calcular" id="calcular" onclick="secuencia()" /> </td>
+                </tr>
+                <tr>
+                    <td>Valor de Y</td>
+                    <td> <span id="valY"></span> </td>
+                </tr>
+                <tr>
+                    <td>Epoca</td>
+                    <td> <span id="epocas"></span> </td>
+                </tr>
+            </tbody>
+        </table>
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+
+    <script>
+        let tensorX = [1, 3, 5, 7, 9, 11];
+        let tensorY = [4, 6, 8, 10, 12, 14];
+        let datosGrafica = new Array(tensorX, tensorY);
+        // tensor.print();
+
+        let grafica = new Chart(document.getElementById("myChart"), {
+            type: 'scatter',
+                data: {
+                datasets: [{
+                    label: "Resultado",
+                    data: datosGrafica,
+                    borderColor: "red",
+                }]
+            },
+            options: {
+                responsive: false
+                    
+            }
+        });
+
+        async function secuencia(){
+            //modelo secuencial
+            const modelo = tf.sequential();
+            // se agrega una capa
+            modelo.add(tf.layers.dense({units:1, inputShape: [1]}))
+
+            modelo.compile({
+                loss: 'meanSquaredError',
+                optimizer: 'sgd'
+            })
+
+            const xs = tf.tensor2d(tensorX, [6, 1]);
+            const ys = tf.tensor2d(tensorY, [6, 1]);
+            
+            const epocas =+ document.getElementById("repeticiones").value;
+            const newX =+ document.getElementById("newX").value;
+
+            // Ciclo que va ir ajustando el calculo
+            for (i = 0; i < epocas; i++) {
+                // Entrenamos el modelo 
+                await modelo.fit(xs, ys, {epochs: 1});
+                // Obtenemos el valor de Y cuando el valor de x sea
+                let prediccionY = modelo.predict(tf.tensor2d([newX], [1, 1])).dataSync()[0];
+                // Escribimos el valor de y
+                document.getElementById("valY").innerText = prediccionY;
+                // En que epoca vamos
+                document.getElementById("epocas").innerText = i+1;
+                // Redibuja la grafica con el nuevo valor de X y Y
+                datosGrafica.push({x:newX,y:prediccionY});
+                grafica.data.datasets[0].data = datosGrafica;
+                grafica.update();
+        }
+
+
+        const model = tf.sequential({
+            layers: [
+                tf.layers.dense({inputShape: [784], units: 32, activation: 'relu'}),
+                tf.layers.dense({units: 10, activation: 'softmax'}),
+            ]
+        });
+
+        model.compile({
+            optimizer: 'sgd',
+            loss: 'categoricalCrossentropy',
+            metrics: ['accuracy']
+        });
+
+        const data = tf.randomNormal([100, 784]);
+        const labels = tf.randomUniform([100, 10]);
+        // const xs = tf.tensor2d([2, 4, 6, 8, 10, 12], [6, 1]);
+        // const ys = tf.tensor2d([5, 7, 9, 11, 13, 15], [6, 1]);
+
+        function onBatchEnd(batch, logs) {
+            console.log('Accuracy', logs.acc);
+        }
+
+        const surface = { name: 'show.fitCallbacks', tab: 'Training' };
+        // Train for 5 epochs with batch size of 32.
+        model.fit(data, labels, {
+            epochs: 5,
+            batchSize: 32,
+            callbacks: tfvis.show.fitCallbacks(surface, ['loss', 'acc']),
+        });
+        // function regresion(){
+        //     const x = parseInt(document.getElementById('x').value);
+        //     const salida = document.getElementById('salida');
+        //     // Entrenar el modelo
+        //     modelo.fit(xs, ys, {epochs: 300}).then(() => {
+        //     //Predecir valores con el modelo
+        //     salida.innerText = modelo.predict(tf.tensor2d(x, [1, 1]))
+        //     });
+        // }
+        }
+
+        
+        
+        // async function funcionLineal(){
+
+        //     //modelo secuencial
+        //     const modelo = tf.sequential();
+
+        //     // se agrega una capa
+        //     modelo.add(tf.layers.dense({units:1, inputShape: [1]}))
+
+        //     modelo.compile({
+        //         loss: 'meanSquaredError',
+        //         optimizer: 'sgd'
+        //     })
+
+        //     const xs = tf.tensor2d([-1, 0, 1, 2, 3, 4, 5], [7, 1]);
+        //     const ys = tf.tensor2d([-3, -1, 0, 1, 3, 5, 7], [7, 1]);
+
+        //     // fit llama a la ejecución
+            
+
+        //     await modelo.fit(xs, ys, {epochs:500})
+
+
+        //     document.getElementById("salida").innerText = modelo.predict(tf.tensor2d([9], [1, 1]))
+            
+        // }
+
+        // funcionLineal();
+    </script>
+</body>
+</html>

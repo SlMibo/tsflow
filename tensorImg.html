@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"> </script> -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
 </head>
 <body>
@@ -14,6 +14,7 @@
         <canvas id="canva"></canvas><br>
         <label>Elija una opción para alterar la imagen</label><br>
         <select name="options" id="options">
+            <option value="0" selected disabled>Elije...</option>
             <option value="forma" id="forma">Cambiar forma</option>
             <option value="girar" id="girar">Girar</option>
             <option value="voltear" id="voltear">Voltear</option>
