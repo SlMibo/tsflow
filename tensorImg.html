@@ -10,28 +10,19 @@
 </head>
 <body>
     <div>
-        <img src="./mariposa.jpg" alt="" id="img">
-        <canvas id="canva"></canvas>
+        <img src="./mariposa.jpg" width="400px" id="img">
+        <canvas id="canva"></canvas><br>
+        <label>Elija una opción para alterar la imagen</label><br>
+        <select name="options" id="options">
+            <option value="forma" id="forma">Cambiar forma</option>
+            <option value="girar" id="girar">Girar</option>
+            <option value="voltear" id="voltear">Voltear</option>
+            <option value="reducir" id="reducir">Reducir</option>
+            <option value="agrandar" id="agrandar">Agrandar</option>
+        </select>
+        
     </div>
 
-    <script>
-
-        const img = document.getElementById('img');
-        const canvas = document.getElementById('canva');
-
-        img.onload = () => {
-            let tensor = tf.browser.fromPixels(img);
-            console.log(tensor.shape);
-            console.log('Memoria usada: ', tf.memory(tensor).numBytes);
-
-            tf.browser.toPixels(tensor.reverse(0), canvas).then(
-                tensor.dispose()
-            );
-
-            console.log('Memoria usada: ', tf.memory(tensor).numBytes);
-
-        }
-        
-    </script>
+    <script src="./tensorImg.js"></script>
 </body>
 </html>

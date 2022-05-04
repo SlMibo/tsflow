@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manejo de tensores de memoria</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+</head>
+
+<body>
+
+</body>
+<script>
+    // -------- Se crea el tensor ----------
+    const a = tf.tensor2d([1,9,9,6],[4,1]);
+
+    // ----------- Mostrar en consola cuantos tensores y memoria se usa
+    console.log(`Tensores usados: ${tf.memory().numTensors}`);
+    console.log(`Bytes: ${tf.memory().numBytes}`);
+
+    // ---------- Se crean más tensores en tf.tidy --------------
+    const x = tf.tidy(() =>{
+        const y = tf.tensor2d([4], [1,1]);
+        const aa = tf.tensor2d([4,4],[2,1]);
+        const aaa = tf.tensor2d([4,4,4],[3,1]);
+        const aaaa = tf.tensor2d([4,4,4,4],[4,1]);
+
+        console.log(`Tensores usados dentro de tidy: ${tf.memory().numTensors}`);
+        console.log(`Bytes usados dentro de tidy: ${tf.memory().numBytes}`);
+
+        // --- Marcar tensor para que no se elimine ---
+        return aa
+    })
+
+    x.print();
+    console.log(`Tensores usados fuera de tidy: ${tf.memory().numTensors}`);
+    console.log(`Bytes usados fuera de tidy: ${tf.memory().numBytes}`);
+
+    // ------------ Eliminar un tensor con tf.dispose -----------------
+    x.dispose();
+    
+    console.log('Se eliminó el tensor x')
+    console.log(`Tensores usados: ${tf.memory().numTensors}`);
+    console.log(`Bytes: ${tf.memory().numBytes}`);
+
+    // ------------- Eliminar todo ------------------
+    a.dispose();
+
+    console.log('Se eliminaron todos los tensores')
+    console.log(`Tensores usados: ${tf.memory().numTensors}`);
+    console.log(`Bytes: ${tf.memory().numBytes}`);
+
+</script>
+
+</html>
