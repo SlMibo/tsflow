@@ -1,7 +1,7 @@
 const img = document.getElementById('img');
 const canvas = document.getElementById('canva');
 const select = document.getElementById('options');
-
+img.crossOrigin = "Anonymous";
 console.log(forma.value)
 
 
@@ -26,10 +26,10 @@ img.onload = () => {
             tf.browser.toPixels(tensor.reverse(1), canvas)
             console.log('Memoria usada: ', tf.memory(tensor).numBytes);
         } else if(select.value == 'reducir'){
-            tf.browser.toPixels(tf.tensor.resizeBilinear(tensor, [minH, minW]), canvas)
+            tf.browser.toPixels(tf.tensor.resizeBilinear(tensor, [minH, minW]), canvas).toFloat().div(tf.scalar(255));
             console.log('Memoria usada: ', tf.memory(tensor).numBytes);
         } else if(select.value == 'agrandar'){
-            tf.browser.toPixels(tf.tensor.resizeBilinear(tensor, [minH, minW]), canvas)
+            tf.browser.toPixels(tf.tensor.resizeBilinear(tensor, [maxH, maxW]), canvas).toFloat().div(tf.scalar(255));
             console.log('Memoria usada: ', tf.memory(tensor).numBytes);
         }
     })
